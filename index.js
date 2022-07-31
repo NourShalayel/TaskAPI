@@ -3,11 +3,11 @@ const express = require('express');
 const config = require('./config');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const eventRoutes = require('./routes/eventRoutes');
+const eventRoutes = require('./routes/route');
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json());  
 app.use(cors());
 app.use(bodyParser.json());
 

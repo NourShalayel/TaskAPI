@@ -5,26 +5,26 @@ const config = require('../../config') ;
 const sql = require('mssql');
 const { query } = require('express');
 
-const getEvents = async () => {
+const getTasks= async () => {
     try {
         let pool = await sql.connect(config.sql);
         const sqlQueries = await utils.loadSqlQueries('events');
-        const eventsList = await pool.request().query(sqlQueries.eventslist);
-        return eventsList.recordset;
+        const tasksList = await pool.request().query(sqlQueries.getAll);
+        return tasksList.recordset;
     } catch (error) {
         console.log(error.message);
     }
 }
 
 
-const getById = async(eventId)=>{
+const getById = async(taskId)=>{
     try {
          let pool = await sql.connect(config.sql) ;
          const sqlQueries = await utils.loadSqlQueries('events');
-         const oneEvent = await pool.request()
-                         .input('eventId' , sql.Int , eventId)
-                         .query(sqlQueries.eventbyId);
-        return oneEvent.recordset ;
+         const oneTask = await pool.request()
+                    .input('taskId' , sql.Int , taskId)
+                    .query(sqlQueries.getTaskById)
+        return oneTask.recordset ;
      
     }catch(error){
        return error.message
@@ -32,41 +32,39 @@ const getById = async(eventId)=>{
  }
 
 
- const createEvent = async(eventData)=>{
+ const createTask = async(taskData)=>{
     try{
         let pool = await sql.connect(config.sql) ;
         const sqlQueries = await utils.loadSqlQueries('events') ;
-        const insertEvent = await pool.request()
-                           .input('eventTitle' , sql.NVarChar(100) , eventData.eventTitle)
-                           .input('eventDescription' , sql.NVarChar(1500) , eventData.eventDescription)
-                           .input('startDate' , sql.Date , eventData.startDate)
-                           .input('endDate' , sql.Date , eventData.endDate)
-                           .input('avenue' , sql.NVarChar(200) , eventData.avenue)
-                           .input('maxMembers' , sql.Int , eventData.maxMembers)
-                           .query(sqlQueries.createEvent)
-        return insertEvent.recordset
+        const insertTask = await pool.request()
+                    .input('taskName' , sql.NVarChar(100) , taskData.taskName)
+                    .input('statusTask' , sql.NVarChar(1500) , taskData.statusTask)
+                    .input('taskDate' , sql.Date , taskData.taskDate)
+                    .input('IsDelete' , sql.Int , taskData.IsDelete)
+                    .query(sqlQueries.create)
+        return insertTask.recordset
 
     }catch(error){
         console.log(error)
+        return error.message
+
     }
  }
 
 
 
- const updateEvent = async(eventId , eventData) =>{
+ const updateTask = async(taskId , taskData) =>{
    try {
 
     let pool = await sql.connect(config.sql) ;
     const sqlQueries = await utils.loadSqlQueries('events') ;
     const update = await pool.request()
-                            .input('eventId', sql.Int, eventId)
-                            .input('eventTitle' , sql.NVarChar(100) , eventData.eventTitle)
-                            .input('eventDescription' , sql.NVarChar(1500) , eventData.eventDescription)
-                            .input('startDate' , sql.Date , eventData.startDate)
-                            .input('endDate' , sql.Date , eventData.endDate)
-                            .input('avenue' , sql.NVarChar(200) , eventData.avenue)
-                            .input('maxMembers' , sql.Int , eventData.maxMembers)
-                            .query(sqlQueries.updateEvent)
+                    .input('taskId', sql.Int, taskId)
+                    .input('taskName' , sql.NVarChar(100) , taskData.taskName)
+                    .input('statusTask' , sql.NVarChar(1500) , taskData.statusTask)
+                    .input('taskDate' , sql.Date , taskData.taskDate)
+                    .input('IsDelete' , sql.Int , taskData.IsDelete)
+                    .query(sqlQueries.update)
     return update.recordset
                   
    }catch(error){
@@ -74,13 +72,13 @@ const getById = async(eventId)=>{
    }
 }
 
-const deleteEvent = async(eventId)=>{
+const deleteTask = async(taskId)=>{
     try {
         let pool = await sql.connect(config.sql)
         const sqlQueries = await utils.loadSqlQueries('events')
         const deleted = await pool.request()
-                        .input('eventId' , sql.Int , eventId)
-                        .query(sqlQueries.deleteEvent)
+                        .input('taskId' , sql.Int , taskId)
+                        .query(sqlQueries.delete)
         return deleted.recordset ;
     }catch(error){
         return error.message
@@ -88,9 +86,9 @@ const deleteEvent = async(eventId)=>{
 }
 
 module.exports = {
-   getEvents , 
+    getTasks , 
    getById , 
-   createEvent , 
-   updateEvent , 
-   deleteEvent  
+   createTask , 
+   updateTask , 
+   deleteTask  
 }
