@@ -64,7 +64,12 @@ const updateTask = async (taskId, taskData) => {
       .input('IsDelete', sql.Int, taskData.IsDelete)
       .query(`
                     UPDATE [dbo].[tasks] 
-                    SET([taskName],[statusTask],[taskDate] ,[IsDelete]) 
+                    SET [taskName] = @taskName , 
+                        [statusTask] = @statusTask ,
+                        [taskDate] = @taskDate ,
+                        [IsDelete] = @IsDelete
+                    WHERE [taskId] = @taskId
+
                     SELECT [taskName] ,[statusTask] ,[taskDate],[IsDelete] 
                     FROM [dbo].[tasks]
                     WHERE [taskId] = @taskId

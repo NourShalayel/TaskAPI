@@ -39,11 +39,13 @@ const createUser = async (userData)=>{
         .input('name' , sql.NVarChar(100), userData.name)
         .input('password' , sql.NVarChar(100) , userData.password)
         .query(`
-            UPDATE [dbo].[users]
-            SET ([name] , [password])
-            SELECT [name] , [password]
-            FROM [dbo].[users]
-            WHERE [id] = @id
+                UPDATE [dbo].[users]
+                SET [name] = @name ,
+                    [password] = @password
+                WHERE [id] = @id
+                SELECT [name] , [password]
+                FROM [dbo].[users]
+                WHERE [id] = @id
         `)
      return update.recordset
     }catch(error){
@@ -57,8 +59,9 @@ const createUser = async (userData)=>{
     const pool = await sql.connect(config.sql)
     const deleted = await pool.request()
      .input('id' , sql.Int , id)
-     .query(`DELETE [dbo].[tasks]
-             WHERE [id] = @id`)
+     .query(`
+              DELETE [dbo].[tasks]
+              WHERE [id] = @id`)
     return deleted.recordset
    }catch(error){
     console.log(error)
